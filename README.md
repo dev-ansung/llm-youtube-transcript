@@ -4,7 +4,7 @@
 [![Tests](https://github.com/dev-ansung/llm-youtube-transcript/actions/workflows/test.yml/badge.svg)](https://github.com/dev-ansung/llm-youtube-transcript/actions/workflows/test.yml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/dev-ansung/llm-youtube-transcript/blob/main/LICENSE)
 
-[LLM](https://llm.datasette.io/) plugin for fetching YouTube video transcripts and piping them into LLM prompts.
+[LLM](https://llm.datasette.io/) plugin for loading YouTube video transcripts as [fragments](https://llm.datasette.io/en/stable/fragments.html).
 
 ## Installation
 
@@ -16,82 +16,36 @@ llm install llm-youtube-transcript
 
 ## Usage
 
-Fetch a transcript and print it to stdout:
+Use the `youtube:` fragment prefix to load a transcript and pass it directly to an LLM prompt:
 
 ```bash
-llm youtube-transcript https://www.youtube.com/watch?v=dQw4w9WgXcQ
+llm -f 'youtube:https://www.youtube.com/watch?v=dQw4w9WgXcQ' 'summarize this transcript'
 ```
 
-You can also pass a bare video ID or a `youtu.be` short link:
+You can also pass a bare video ID or any supported YouTube URL:
 
 ```bash
-llm youtube-transcript dQw4w9WgXcQ
-llm youtube-transcript https://youtu.be/dQw4w9WgXcQ
-llm youtube-transcript https://www.youtube.com/shorts/dQw4w9WgXcQ
+# Bare video ID
+llm -f 'youtube:dQw4w9WgXcQ' 'summarize this transcript'
+
+# youtu.be short link
+llm -f 'youtube:https://youtu.be/dQw4w9WgXcQ' 'summarize this transcript'
+
+# YouTube Shorts URL
+llm -f 'youtube:https://www.youtube.com/shorts/dQw4w9WgXcQ' 'summarize this transcript'
 ```
 
-### Pipe into an LLM prompt
+### Combining with other fragments
+
+You can combine the transcript with other fragments or system prompts:
 
 ```bash
-llm youtube-transcript dQw4w9WgXcQ | llm "summarize this transcript"
+llm -f 'youtube:dQw4w9WgXcQ' -s 'You are a helpful assistant.' 'give me the key points'
 ```
 
-### Options
+### Language fallback
 
-| Option | Default | Description |
-|---|---|---|
-| `-l/--language CODE` | *(video default)* | Request a specific language (e.g. `en`, `fr`). Repeat for a priority list. |
-| `--format text\|json\|srt\|vtt` | `text` | Output format. |
-| `--timestamps/--no-timestamps` | `--no-timestamps` | Prefix each line with a timestamp (text format only). |
-
-### Format examples
-
-**Plain text (default)**
-
-```bash
-llm youtube-transcript dQw4w9WgXcQ
-# Never gonna give you up Never gonna let you down ...
-```
-
-**Plain text with timestamps**
-
-```bash
-llm youtube-transcript dQw4w9WgXcQ --timestamps
-# [00:00] Never gonna give you up
-# [00:03] Never gonna let you down
-```
-
-**JSON** – includes `text`, `start` (seconds), and `duration` (seconds) for every snippet:
-
-```bash
-llm youtube-transcript dQw4w9WgXcQ --format json
-```
-
-**SRT** (SubRip subtitles):
-
-```bash
-llm youtube-transcript dQw4w9WgXcQ --format srt
-```
-
-**WebVTT**:
-
-```bash
-llm youtube-transcript dQw4w9WgXcQ --format vtt
-```
-
-### Language selection
-
-Pass `-l`/`--language` one or more times to specify a priority list. The first
-available language wins:
-
-```bash
-# Try French first, fall back to English
-llm youtube-transcript dQw4w9WgXcQ -l fr -l en
-```
-
-> **Note:** Auto-generated and manually-created captions are both returned by
-> `youtube-transcript-api`. If you need to distinguish between them, use
-> `--format json` and check the source URL.
+The plugin tries to fetch the English transcript first. If no English transcript is available it automatically falls back to the first available transcript for that video.
 
 ## Development
 
