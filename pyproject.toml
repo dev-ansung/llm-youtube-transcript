@@ -1,0 +1,29 @@
+[project]
+name = "llm-youtube-transcript"
+version = "0.1.0"
+description = "LLM plugin for fetching YouTube video transcripts"
+readme = "README.md"
+authors = [{name = "dev-ansung"}]
+license = "Apache-2.0"
+classifiers = []
+requires-python = ">=3.9"
+dependencies = [
+    "llm>=0.24",
+    "youtube-transcript-api>=1.0.0",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project.urls]
+Homepage = "https://github.com/dev-ansung/llm-youtube-transcript"
+Changelog = "https://github.com/dev-ansung/llm-youtube-transcript/releases"
+Issues = "https://github.com/dev-ansung/llm-youtube-transcript/issues"
+CI = "https://github.com/dev-ansung/llm-youtube-transcript/actions"
+
+[project.entry-points.llm]
+youtube_transcript = "llm_youtube_transcript"
+
+[project.optional-dependencies]
+test = ["pytest"]
